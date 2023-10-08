@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.hellblazer.cryptography.proto";
+option java_outer_classname = "Crypto";
+option objc_class_prefix = "Cr";
+import "google/protobuf/any.proto";
+
+package com.hellblazer.crypto;
+
+message Digest_ {
+  int32 type = 1;
+  repeated uint64 hash = 2;
+}
+
+message Signature_ {
+  int32 type = 1;
+  bytes signature = 2;
+}
+
+message PublicKey_ {
+  int32 type = 1;
+  bytes encoded = 2;
+}
+
+message Biff {
+  int32 m = 1;
+  int32 k = 2;
+  int64 seed = 3;
+  int32 type = 4;
+  repeated uint64 bits = 5;
+}
+
+message HexBloome {
+  repeated Digest_ crowns = 1;
+  Biff membership = 2;
+  int32 cardinality = 3;
+}
