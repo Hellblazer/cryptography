@@ -17,7 +17,6 @@ import java.util.function.Supplier;
 
 /**
  * @author hal.hildebrand
- *
  */
 public class BloomWindow<T> {
     private final AtomicInteger                 count    = new AtomicInteger(0);

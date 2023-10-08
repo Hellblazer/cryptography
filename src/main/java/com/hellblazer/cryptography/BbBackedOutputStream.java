@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 
 /**
  * @author hal.hildebrand
- *
  */
 public class BbBackedOutputStream extends OutputStream {
     private final ByteBuffer buf;

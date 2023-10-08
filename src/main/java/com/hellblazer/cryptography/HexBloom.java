@@ -31,10 +31,10 @@ public class HexBloom {
     public static final  double                   DEFAULT_FPR      = 0.0001;
     public static final  long                     DEFAULT_SEED     = Primes.PRIMES[666];
     private static final Function<Digest, Digest> IDENTITY         = d -> d;
-    private static       int                      MINIMUM_BFF_CARD = 100;
-    private final int                 cardinality;
+    private static final int                      MINIMUM_BFF_CARD = 100;
+    private final        int                      cardinality;
     private final Digest[]            crowns;
-    private       BloomFilter<Digest> membership;
+    private final BloomFilter<Digest> membership;
 
     public HexBloom(Digest initial, int count) {
         assert count > 0;

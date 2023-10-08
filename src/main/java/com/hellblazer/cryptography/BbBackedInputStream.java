@@ -18,15 +18,18 @@ import java.util.stream.Collectors;
 
 /**
  * @author hal.hildebrand
- *
  */
 public class BbBackedInputStream extends InputStream {
 
+    private final ByteBuffer buf;
+
+    public BbBackedInputStream(ByteBuffer buf) {
+        this.buf = buf;
+    }
+
     public static InputStream aggregate(byte[]... buffers) {
-        return aggregateStreams(Arrays.asList(buffers)
-                                      .stream()
-                                      .map(e -> new ByteArrayInputStream(e))
-                                      .collect(Collectors.toList()));
+        return aggregateStreams(
+        Arrays.asList(buffers).stream().map(e -> new ByteArrayInputStream(e)).collect(Collectors.toList()));
     }
 
     public static InputStream aggregate(ByteBuffer... buffers) {
@@ -34,10 +37,8 @@ public class BbBackedInputStream extends InputStream {
     }
 
     public static InputStream aggregate(ByteString... byteStrings) {
-        return aggregate(Arrays.asList(byteStrings)
-                               .stream()
-                               .map(e -> e.asReadOnlyByteBuffer())
-                               .collect(Collectors.toList()));
+        return aggregate(
+        Arrays.asList(byteStrings).stream().map(e -> e.asReadOnlyByteBuffer()).collect(Collectors.toList()));
 
     }
 
@@ -104,12 +105,6 @@ public class BbBackedInputStream extends InputStream {
                 return is;
             }
         });
-    }
-
-    private final ByteBuffer buf;
-
-    public BbBackedInputStream(ByteBuffer buf) {
-        this.buf = buf;
     }
 
     @Override

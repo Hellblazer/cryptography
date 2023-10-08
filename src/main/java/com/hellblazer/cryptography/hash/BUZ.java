@@ -9,9 +9,9 @@ import java.nio.ByteBuffer;
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,7 @@ public final class BUZ {
 
     private static final long MASTER = 0xe12398c6d9ae3b8aL;
 
-    private static final long MIX[/* 0:255 */] = { /* 000 */0x4476081a7043a46fL, 0x45768b8a6e7eac19L,
+    private static final long[] MIX/* 0:255 */ = { /* 000 */0x4476081a7043a46fL, 0x45768b8a6e7eac19L,
                                                    0xebd556c1cf055952L, /* */0x72ed2da1bf010101L, 0x3ff2030b128e8a64L,
                                                    /* 005 */0xcbc330238adcfef2L, 0x737807fe42e20c6cL,
                                                    0x74dabaedb1095c58L, /* */0x968f065c65361d67L, 0xd3f4018ac7a4b199L,

@@ -55,10 +55,9 @@ public class JohnHancock {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof JohnHancock)) {
+        if (!(obj instanceof JohnHancock other)) {
             return false;
         }
-        JohnHancock other = (JohnHancock) obj;
         return algorithm == other.algorithm && Arrays.equals(signature, other.signature);
     }
 

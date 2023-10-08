@@ -41,11 +41,12 @@ public class EdDSAOperations {
             }
         }
     };
-    private final ASN1ObjectIdentifier curveId;
-    private final KeyFactory           keyFactory;
-    private final KeyPairGenerator     keyPairGenerator;
-    private final NamedParameterSpec   parameterSpec;
-    private final SignatureAlgorithm signatureAlgorithm;
+    private final        ASN1ObjectIdentifier   curveId;
+    private final        KeyFactory             keyFactory;
+    private final        KeyPairGenerator       keyPairGenerator;
+    private final        NamedParameterSpec     parameterSpec;
+    private final        SignatureAlgorithm     signatureAlgorithm;
+
     public EdDSAOperations(SignatureAlgorithm signatureAlgorithm) {
         try {
             this.signatureAlgorithm = signatureAlgorithm;

@@ -7,6 +7,7 @@
 package com.hellblazer.cryptography;
 
 import org.apache.commons.math3.fraction.Fraction;
+
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,111 +18,22 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * @author hal.hildebrand
- *
  */
 public interface SigningThreshold {
 
-    interface Unweighted extends SigningThreshold {
-
-        int getThreshold();
-
-    }
-
-    interface Weighted extends SigningThreshold {
-
-        interface Weight {
-            class WeightImpl implements Weight {
-                private final Integer denominator;
-                private final Integer numerator;
-
-                public WeightImpl(Integer numerator, Integer denominator) {
-                    this.numerator = numerator;
-                    this.denominator = denominator;
-                }
-
-                @Override
-                public Optional<Integer> denominator() {
-                    return Optional.ofNullable(denominator);
-                }
-
-                @Override
-                public int numerator() {
-                    return numerator;
-                }
-
-                @Override
-                public int hashCode() {
-                    return Objects.hash(denominator, numerator);
-                }
-
-                @Override
-                public boolean equals(Object obj) {
-                    if (this == obj) {
-                        return true;
-                    }
-                    if (!(obj instanceof WeightImpl)) {
-                        return false;
-                    }
-                    WeightImpl other = (WeightImpl) obj;
-                    return Objects.equals(denominator, other.denominator) && Objects.equals(numerator, other.numerator);
-                }
-
-            }
-
-            Optional<Integer> denominator();
-
-            int numerator();
-        }
-
-        class WeightedImpl implements Weighted {
-            private final Weight[][] weights;
-
-            public WeightedImpl(Weight[][] weightGroups) {
-                this.weights = weightGroups;
-            }
-
-            @Override
-            public boolean equals(Object obj) {
-                if (this == obj) {
-                    return true;
-                }
-                if (!(obj instanceof WeightedImpl)) {
-                    return false;
-                }
-                WeightedImpl other = (WeightedImpl) obj;
-                return Arrays.deepEquals(weights, other.weights);
-            }
-
-            @Override
-            public int hashCode() {
-                final int prime = 31;
-                int result = 1;
-                result = prime * result + Arrays.deepHashCode(weights);
-                return result;
-            }
-
-            @Override
-            public Weight[][] getWeights() {
-                return weights;
-            }
-        }
-
-        Weight[][] getWeights();
-    }
-
-    public static int countWeights(Weighted.Weight[][] weights) {
+    static int countWeights(Weighted.Weight[][] weights) {
         return Arrays.stream(weights).mapToInt(w -> w.length).sum();
     }
 
-    public static Weighted.Weight[] group(String... weights) {
+    static Weighted.Weight[] group(String... weights) {
         return Stream.of(weights).map(SigningThreshold::weight).toArray(Weighted.Weight[]::new);
     }
 
-    public static Weighted.Weight[] group(Weighted.Weight... weights) {
+    static Weighted.Weight[] group(Weighted.Weight... weights) {
         return weights;
     }
 
-    public static boolean thresholdMet(SigningThreshold threshold, int[] indexes) {
+    static boolean thresholdMet(SigningThreshold threshold, int[] indexes) {
         if (threshold instanceof Unweighted) {
             return thresholdMet((Unweighted) threshold, indexes);
         } else if (threshold instanceof Weighted) {
@@ -131,12 +43,12 @@ public interface SigningThreshold {
         }
     }
 
-    public static boolean thresholdMet(Unweighted threshold, int[] indexes) {
+    static boolean thresholdMet(Unweighted threshold, int[] indexes) {
         requireNonNull(indexes, "indexes");
         return indexes.length >= threshold.getThreshold();
     }
 
-    public static boolean thresholdMet(Weighted threshold, int[] indexes) {
+    static boolean thresholdMet(Weighted threshold, int[] indexes) {
         requireNonNull(indexes);
 
         if (indexes.length == 0) {
@@ -169,7 +81,7 @@ public interface SigningThreshold {
         return true;
     }
 
-    public static Unweighted unweighted(int threshold) {
+    static Unweighted unweighted(int threshold) {
         if (threshold < 0) {
             throw new IllegalArgumentException("threshold must be >= 0");
         }
@@ -182,11 +94,11 @@ public interface SigningThreshold {
         };
     }
 
-    public static Weighted.Weight weight(int value) {
+    static Weighted.Weight weight(int value) {
         return weight(value, null);
     }
 
-    public static Weighted.Weight weight(int numerator, Integer denominator) {
+    static Weighted.Weight weight(int numerator, Integer denominator) {
         if (denominator != null && denominator <= 0) {
             throw new IllegalArgumentException("denominator must be > 0");
         }
@@ -198,7 +110,7 @@ public interface SigningThreshold {
         return new Weighted.Weight.WeightImpl(numerator, denominator);
     }
 
-    public static Weighted.Weight weight(String value) {
+    static Weighted.Weight weight(String value) {
         var parts = value.split("/");
         if (parts.length == 1) {
             return weight(Integer.parseInt(parts[0]));
@@ -209,17 +121,17 @@ public interface SigningThreshold {
         }
     }
 
-    public static Weighted weighted(String... weightsAsStrings) {
+    static Weighted weighted(String... weightsAsStrings) {
         var weights = Stream.of(weightsAsStrings).map(SigningThreshold::weight).toArray(Weighted.Weight[]::new);
 
         return weighted(weights);
     }
 
-    public static Weighted weighted(Weighted.Weight... weights) {
+    static Weighted weighted(Weighted.Weight... weights) {
         return weighted(new Weighted.Weight[][] { weights });
     }
 
-    public static Weighted weighted(Weighted.Weight[]... weightGroups) {
+    static Weighted weighted(Weighted.Weight[]... weightGroups) {
         for (var group : weightGroups) {
             if (!sumGreaterThanOrEqualToOne(group)) {
                 throw new IllegalArgumentException("group sum is less than 1: " + Arrays.deepToString(group));
@@ -250,5 +162,91 @@ public interface SigningThreshold {
         }
 
         return sum.compareTo(Fraction.ONE) >= 0;
+    }
+
+    interface Unweighted extends SigningThreshold {
+
+        int getThreshold();
+
+    }
+
+    interface Weighted extends SigningThreshold {
+
+        Weight[][] getWeights();
+
+        interface Weight {
+            Optional<Integer> denominator();
+
+            int numerator();
+
+            class WeightImpl implements Weight {
+                private final Integer denominator;
+                private final Integer numerator;
+
+                public WeightImpl(Integer numerator, Integer denominator) {
+                    this.numerator = numerator;
+                    this.denominator = denominator;
+                }
+
+                @Override
+                public Optional<Integer> denominator() {
+                    return Optional.ofNullable(denominator);
+                }
+
+                @Override
+                public int numerator() {
+                    return numerator;
+                }
+
+                @Override
+                public int hashCode() {
+                    return Objects.hash(denominator, numerator);
+                }
+
+                @Override
+                public boolean equals(Object obj) {
+                    if (this == obj) {
+                        return true;
+                    }
+                    if (!(obj instanceof WeightImpl other)) {
+                        return false;
+                    }
+                    return Objects.equals(denominator, other.denominator) && Objects.equals(numerator, other.numerator);
+                }
+
+            }
+        }
+
+        class WeightedImpl implements Weighted {
+            private final Weight[][] weights;
+
+            public WeightedImpl(Weight[][] weightGroups) {
+                this.weights = weightGroups;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                if (this == obj) {
+                    return true;
+                }
+                if (!(obj instanceof WeightedImpl other)) {
+                    return false;
+                }
+                return Arrays.deepEquals(weights, other.weights);
+            }
+
+            @Override
+            public int hashCode() {
+                final int prime = 31;
+                int result = 1;
+                result = prime * result + Arrays.deepHashCode(weights);
+                return result;
+            }
+
+            @Override
+            public Weight[][] getWeights() {
+                return weights;
+            }
+        }
     }
 }

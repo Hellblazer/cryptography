@@ -113,9 +113,7 @@ public class Digest implements Comparable<Digest> {
             throw new IllegalArgumentException();
         }
         byte[] hash = new byte[digestAlgorithm.digestLength()];
-        for (int i = 0; i < bs.length; i++) {
-            hash[i] = bs[i];
-        }
+        System.arraycopy(bs, 0, hash, 0, bs.length);
         return new Digest(digestAlgorithm, hash);
     }
 

@@ -18,18 +18,16 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.*;
 
 /**
  * Enumerations of digest algorithms
- * 
+ *
  * @author hal.hildebrand
  */
 public enum DigestAlgorithm {
 
     BLAKE2B_256 {
-
         @Override
         public byte digestCode() {
             return 1;
@@ -67,9 +65,7 @@ public enum DigestAlgorithm {
             return digest;
         }
 
-    },
-    BLAKE2B_512 {
-
+    }, BLAKE2B_512 {
         @Override
         public byte digestCode() {
             return 2;
@@ -106,9 +102,7 @@ public enum DigestAlgorithm {
             digester.doFinal(digest, 0);
             return digest;
         }
-    },
-    BLAKE2S_256 {
-
+    }, BLAKE2S_256 {
         @Override
         public byte digestCode() {
             return 3;
@@ -146,8 +140,7 @@ public enum DigestAlgorithm {
             return digest;
         }
 
-    },
-    BLAKE3_256 {
+    }, BLAKE3_256 {
         @Override
         public byte digestCode() {
             return 4;
@@ -184,8 +177,7 @@ public enum DigestAlgorithm {
             digester.doFinal(digest, 0);
             return digest;
         }
-    },
-    BLAKE3_512 {
+    }, BLAKE3_512 {
         @Override
         public byte digestCode() {
             return 5;
@@ -222,8 +214,7 @@ public enum DigestAlgorithm {
             digester.doFinal(digest, 0);
             return digest;
         }
-    },
-    NONE {
+    }, NONE {
         @Override
         public byte digestCode() {
             return 0;
@@ -253,8 +244,7 @@ public enum DigestAlgorithm {
         public byte[] hashOf(InputStream is) {
             return EMPTY;
         }
-    },
-    SHA2_256 {
+    }, SHA2_256 {
         @Override
         public byte digestCode() {
             return 6;
@@ -291,8 +281,7 @@ public enum DigestAlgorithm {
             return 32;
         }
 
-    },
-    SHA3_512 {
+    }, SHA3_512 {
         @Override
         public byte digestCode() {
             return 9;
@@ -305,17 +294,8 @@ public enum DigestAlgorithm {
 
     };
 
-    private static class DigestCache {
-        private final Map<DigestAlgorithm, MessageDigest> cache = new HashMap<>();
-
-        public MessageDigest lookup(DigestAlgorithm da) {
-            return cache.computeIfAbsent(da, k -> k.createJCA());
-        }
-    }
-
     public static final DigestAlgorithm DEFAULT           = BLAKE2B_256;
     public static final long            MAX_UNSIGNED_LONG = -1L;
-
     private static final byte[]                   EMPTY          = new byte[0];
     private static final long[]                   LAST_32        = new long[4];
     private static final long[]                   LAST_64        = new long[8];
@@ -330,28 +310,28 @@ public enum DigestAlgorithm {
 
     public static DigestAlgorithm fromDigestCode(int i) {
         return switch (i) {
-        case 0:
-            yield NONE;
-        case 1:
-            yield BLAKE2B_256;
-        case 2:
-            yield BLAKE2B_512;
-        case 3:
-            yield BLAKE2S_256;
-        case 4:
-            yield BLAKE3_256;
-        case 5:
-            yield BLAKE3_512;
-        case 6:
-            yield SHA2_256;
-        case 7:
-            yield SHA2_512;
-        case 8:
-            yield SHA3_256;
-        case 9:
-            yield SHA3_512;
-        default:
-            throw new IllegalArgumentException("Unknown digest code: " + i);
+            case 0:
+                yield NONE;
+            case 1:
+                yield BLAKE2B_256;
+            case 2:
+                yield BLAKE2B_512;
+            case 3:
+                yield BLAKE2S_256;
+            case 4:
+                yield BLAKE3_256;
+            case 5:
+                yield BLAKE3_512;
+            case 6:
+                yield SHA2_256;
+            case 7:
+                yield SHA2_512;
+            case 8:
+                yield SHA3_256;
+            case 9:
+                yield SHA3_512;
+            default:
+                throw new IllegalArgumentException("Unknown digest code: " + i);
         };
     }
 
@@ -464,12 +444,20 @@ public enum DigestAlgorithm {
         try {
             return MessageDigest.getInstance(algorithmName());
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("Unable to retrieve " + algorithmName()
-            + " Message DigestAlgorithm instance", e);
+            throw new IllegalStateException(
+            "Unable to retrieve " + algorithmName() + " Message DigestAlgorithm instance", e);
         }
     }
 
     private MessageDigest lookupJCA() {
         return MESSAGE_DIGEST.get().lookup(this);
+    }
+
+    private static class DigestCache {
+        private final Map<DigestAlgorithm, MessageDigest> cache = new HashMap<>();
+
+        public MessageDigest lookup(DigestAlgorithm da) {
+            return cache.computeIfAbsent(da, k -> k.createJCA());
+        }
     }
 }

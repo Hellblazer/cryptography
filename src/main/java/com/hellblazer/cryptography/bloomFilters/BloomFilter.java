@@ -20,17 +20,19 @@ import java.util.function.Consumer;
  */
 abstract public class BloomFilter<T> {
 
-    private static final int BYTES  = 3;
-    private static final int DIGEST = 0;
-    private static final int INT    = 1;
-    private static final int LONG   = 2;
-    private static final int STRING = 4;
-    private static final int ULONG  = 5;
-    private final BitSet  bits;
-    private final Hash<T> h;
+    private static final int     BYTES  = 3;
+    private static final int     DIGEST = 0;
+    private static final int     INT    = 1;
+    private static final int     LONG   = 2;
+    private static final int     STRING = 4;
+    private static final int     ULONG  = 5;
+    private final        BitSet  bits;
+    private final        Hash<T> h;
+
     private BloomFilter(Hash<T> h) {
         this(h, new BitSet(h.getM()));
     }
+
     private BloomFilter(Hash<T> h, BitSet bits) {
         this.h = h;
         this.bits = bits;

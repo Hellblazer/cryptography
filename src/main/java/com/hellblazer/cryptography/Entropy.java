@@ -19,32 +19,31 @@ import java.util.function.Function;
 
 /**
  * @author hal.hildebrand
- *
  */
 final public class Entropy {
 
-    private static ThreadLocal<BitsStreamGenerator> bitsStreamPool   = new ThreadLocal<>() {
+    private static final SecureRandom                     secureEntropy;
+    private static final ThreadLocal<BitsStreamGenerator> bitsStreamPool   = new ThreadLocal<>() {
 
-                                                                         @Override
-                                                                         protected BitsStreamGenerator initialValue() {
-                                                                             return new MersenneTwister(secureEntropy.nextLong());
-                                                                         }
-                                                                     };
-    private static final SecureRandom               secureEntropy;
-    private static ThreadLocal<SecureRandom>        secureRandomPool = new ThreadLocal<>() {
+        @Override
+        protected BitsStreamGenerator initialValue() {
+            return new MersenneTwister(secureEntropy.nextLong());
+        }
+    };
+    private static final ThreadLocal<SecureRandom>        secureRandomPool = new ThreadLocal<>() {
 
-                                                                         @Override
-                                                                         protected SecureRandom initialValue() {
-                                                                             SecureRandom entropy;
-                                                                             try {
-                                                                                 entropy = SecureRandom.getInstance("SHA1PRNG");
-                                                                             } catch (NoSuchAlgorithmException e) {
-                                                                                 throw new IllegalStateException(e);
-                                                                             }
-                                                                             entropy.setSeed(secureEntropy.nextLong());
-                                                                             return entropy;
-                                                                         }
-                                                                     };
+        @Override
+        protected SecureRandom initialValue() {
+            SecureRandom entropy;
+            try {
+                entropy = SecureRandom.getInstance("SHA1PRNG");
+            } catch (NoSuchAlgorithmException e) {
+                throw new IllegalStateException(e);
+            }
+            entropy.setSeed(secureEntropy.nextLong());
+            return entropy;
+        }
+    };
 
     static {
         try {
@@ -52,6 +51,9 @@ final public class Entropy {
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private Entropy() {
     }
 
     public static void acceptBitsStream(Consumer<BitsStreamGenerator> c) {
@@ -120,8 +122,5 @@ final public class Entropy {
 
     public static void secureShuffle(List<?> list) {
         acceptSecure(entropy -> Collections.shuffle(list, entropy));
-    }
-
-    private Entropy() {
     }
 }
