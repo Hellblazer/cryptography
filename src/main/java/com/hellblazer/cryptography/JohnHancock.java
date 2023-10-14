@@ -34,7 +34,7 @@ public class JohnHancock {
     private final byte[]             signature;
 
     public JohnHancock(Signature_ sig) {
-        this(SignatureAlgorithm.fromSignatureCode(sig.getType()), sig.toByteArray());
+        this(SignatureAlgorithm.fromSignatureCode(sig.getType()), sig.getSignature().toByteArray());
     }
 
     public JohnHancock(SignatureAlgorithm algorithm, byte[] signature) {

@@ -33,47 +33,44 @@ public class BloomWindow<T> {
         }
     }
 
-    public void add(T element) {
-        if (count.incrementAndGet() % windowSize == 0) {
-            segments.removeLast();
-            segments.addFirst(factory.get());
-        }
-        segments.getFirst().add(element);
+    public boolean add(T element) {
+        return add(element, t -> {
+        });
     }
 
     public boolean add(T element, Consumer<T> ifAbsent) {
-        if (count.incrementAndGet() % windowSize == 0) {
-            segments.removeLast();
-            segments.addFirst(factory.get());
-        }
-        AtomicBoolean added = new AtomicBoolean();
-        Consumer<T> wrap = t -> {
-            if (ifAbsent != null) {
-                ifAbsent.accept(t);
-            }
-            added.set(true);
-        };
         final var l = rwLock.writeLock();
         l.lock();
         try {
+            if (count.incrementAndGet() % windowSize == 0) {
+                segments.removeLast();
+                segments.addFirst(factory.get());
+            }
+            AtomicBoolean added = new AtomicBoolean();
+            Consumer<T> wrap = t -> {
+                if (ifAbsent != null) {
+                    ifAbsent.accept(t);
+                }
+                added.set(true);
+            };
             segments.getFirst().add(element, wrap);
+            return added.get();
         } finally {
             l.unlock();
         }
-        return added.get();
     }
 
     public boolean contains(T element) {
-        final var l = rwLock.readLock();
-        l.lock();
-        try {
-            for (var biff : segments) {
+        for (var biff : segments) {
+            final var l = rwLock.readLock();
+            l.lock();
+            try {
                 if (biff.contains(element)) {
                     return true;
                 }
+            } finally {
+                l.unlock();
             }
-        } finally {
-            l.unlock();
         }
         return false;
     }
