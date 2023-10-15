@@ -45,48 +45,20 @@ public interface Verifier {
     }
 
     class DefaultVerifier implements Verifier {
-        private final Map<Integer, PublicKey> keys;
-
-        public DefaultVerifier(List<PublicKey> keys) {
-            this(mapped(keys));
-        }
-
-        public DefaultVerifier(Map<Integer, PublicKey> keys) {
-            this.keys = keys;
-        }
+        private final PublicKey key;
 
         public DefaultVerifier(PublicKey key) {
-            this(mapped(new PublicKey[] { key }));
-        }
-
-        public DefaultVerifier(PublicKey[] keys) {
-            this(mapped(keys));
-        }
-
-        public static Map<Integer, PublicKey> mapped(List<PublicKey> list) {
-            var mapped = new HashMap<Integer, PublicKey>();
-            for (int i = 0; i < list.size(); i++) {
-                mapped.put(i, list.get(i));
-            }
-            return mapped;
-        }
-
-        public static Map<Integer, PublicKey> mapped(PublicKey[] array) {
-            var mapped = new HashMap<Integer, PublicKey>();
-            for (int i = 0; i < array.length; i++) {
-                mapped.put(i, array[i]);
-            }
-            return mapped;
+            this.key = key;
         }
 
         @Override
         public String toString() {
-            return "V[" + keys.values().stream().map(k -> ":" + k.getEncoded()).toList() + "]";
+            return "V[" + key.getEncoded() + "]";
         }
 
         @Override
         public boolean verify(JohnHancock signature, InputStream message) {
-            return false;
+            return signature.verify(key, message);
         }
     }
 
